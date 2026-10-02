@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="color-scheme" content="light">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#187A5A"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Absensi">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Absensi Generus</title>
 <style>
@@ -280,6 +281,7 @@ async function cam(){
    d.detect(v).then(function(r){if(r.length){st.getTracks().forEach(function(t){t.stop()});sc(r[0].rawValue)}else setTimeout(lp,300)}).catch(function(){setTimeout(lp,300)})})();
  }catch(e){note=['no','Kamera/scan QR tidak tersedia di perangkat ini. Ketik kode secara manual.'];render()}}
 setInterval(function(){var e=document.activeElement;if(AU&&AU.ev&&WS&&!(e&&(e.tagName==='INPUT'||e.tagName==='SELECT')))boot().then(render)},7000);
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(function(){});
 render();
 if(AU)chkV().then(function(ok){return ok?boot():0}).then(render).catch(function(e){WHY=why(e);stat(false);render()});
 </script>
