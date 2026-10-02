@@ -99,7 +99,7 @@ function setAU(j,email){AU={email:email||AU.email,uid:j.localId||j.user_id,it:j.
 function tok(){if(!AU)return Promise.reject(new Error('x'));if(Date.now()<AU.exp-60000)return Promise.resolve(AU.it);
  return jf('https://securetoken.googleapis.com/v1/token?key='+FK,'grant_type=refresh_token&refresh_token='+encodeURIComponent(AU.rt),true).then(function(j){setAU(j,AU.email);return AU.it}).catch(function(e){if(e.st===400)lo();throw e})}
 function api(m,p,v){return tok().then(function(t){return fetch(FB_URL+'/users/'+AU.uid+p+'.json?auth='+encodeURIComponent(t),{method:m,body:v===undefined?undefined:JSON.stringify(v)})}).then(function(r){if(!r.ok){var x=new Error('HTTP '+r.status);x.st=r.status;throw x}return r.json()})}
-function stat(b){okk=b;var tx=(b===false?'● Tidak terhubung · '+WHY:'● Tersambung · data tersimpan online')+(AU?' · '+AU.email:'');Array.prototype.forEach.call(document.querySelectorAll('.stt'),function(e){e.textContent=tx})}
+function stat(b){okk=b;var tx=AU?(b===false?'● Tidak terhubung · '+WHY:'● Tersambung · data tersimpan online')+' · '+AU.email:'';Array.prototype.forEach.call(document.querySelectorAll('.stt'),function(e){e.textContent=tx})}
 function op(m,p,v){api(m,p,v).then(function(){stat(true)}).catch(function(e){WHY=why(e);stat(false);alert('Gagal menyimpan ke server. '+WHY)})}
 function arr(o){return o?Object.keys(o).map(function(k){var v=o[k];if(!v.id)v.id=k;return v}):[]}
 function load(){if(!AU)return Promise.resolve();
