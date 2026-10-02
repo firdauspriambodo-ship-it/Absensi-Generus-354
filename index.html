@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="color-scheme" content="light">
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#187A5A"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Absensi">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#187A5A"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-maskable-512.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Absensi">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Absensi Generus</title>
 <style>
@@ -73,6 +73,15 @@ video{width:100%;border-radius:10px;margin-top:8px}
 .kl{list-style:none;padding:0;margin:0 0 16px;text-align:left}.kl li{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--bd)}.kl b{flex:0 0 30px;color:var(--pr)}
 .mh{margin:6px 2px 8px;font-size:16px}
 .ft{text-align:center;font:700 24px/2 'Amiri','Noto Naskh Arabic','Geeza Pro',serif;color:var(--pr);margin:18px 0 4px}
+
+.sg{display:grid;grid-template-columns:1fr repeat(4,44px);gap:6px;align-items:center}
+.sg.sh{font-size:13px;color:var(--mu);padding-bottom:8px;text-align:center}.sg.sh span{text-align:left}
+.sg.sh b{padding:5px 0;border-radius:8px;color:#fff}
+.sg.sr{padding:8px 0;border-top:1px solid var(--bd)}.sg.sr small{display:block;color:var(--mu)}
+.sb{width:44px;height:40px;padding:0;font-weight:700;border-radius:8px;background:var(--card)}
+.sb.cH{color:#187A5A;border-color:#187A5A}.sb.cI{color:#2563eb;border-color:#2563eb}.sb.cS{color:#a16207;border-color:#eab308}.sb.cA{color:#dc2626;border-color:#dc2626}
+.sb.on.cH,.sh b.cH{background:#187A5A;color:#fff}.sb.on.cI,.sh b.cI{background:#2563eb;color:#fff}.sb.on.cS,.sh b.cS{background:#eab308;color:#3b2f00}.sb.on.cA,.sh b.cA{background:#dc2626;color:#fff}
+.sb:disabled{opacity:.55}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -118,11 +127,15 @@ function load(){if(!AU||!WS)return Promise.resolve();
  return raw('GET','/ws/'+WS).then(function(w){w=w||{};var d=w.d||{},ks=ekey(AU.email);WN=w.name||'';RL=Object.keys(w.roles||{}).map(function(k){return{k:k,e:w.roles[k].e,r:w.roles[k].r}});var x=RL.filter(function(r){return r.k===ks})[0];R=x?x.r:null;S={m:arr(d.m),a:arr(d.a),t:d.t||4,tg:arr(d.tg),pr:arr(d.pr)};stat(true)}).catch(function(e){WHY=why(e);stat(false)})}
 function sm(){return S.m.slice().sort(function(a,b){return cmp(a.n,b.n)})}
 function has(id,d){return S.a.find(function(x){return x.id===id&&x.d===d})}
+function st(r){return r.s||'H'}
+function hasH(id,d){var r=has(id,d);return r&&st(r)==='H'?r:null}
 function nm(id){var m=S.m.find(function(x){return x.id===id});return m?m.n:id}
-function list(d){return S.a.filter(function(x){return x.d===d}).sort(function(a,b){return cmp(nm(a.id),nm(b.id))})}
-function mark(id,d,on){var h=has(id,d),k=id+'_'+d;
- if(on&&!h){var o={id:id,d:d,t:new Date().toTimeString().slice(0,5),by:me};S.a.push(o);op('PUT','/a/'+k,o)}
- else if(!on&&h){S.a=S.a.filter(function(x){return x!==h});op('DELETE','/a/'+k)}}
+function list(d){return S.a.filter(function(x){return x.d===d&&st(x)==='H'}).sort(function(a,b){return cmp(nm(a.id),nm(b.id))})}
+function setS(id,d,sv){var h=has(id,d),k=id+'_'+d;
+ if(!sv){if(h){S.a=S.a.filter(function(x){return x!==h});op('DELETE','/a/'+k)}return}
+ var o={id:id,d:d,t:new Date().toTimeString().slice(0,5),by:me,s:sv};
+ if(h)S.a=S.a.filter(function(x){return x!==h});S.a.push(o);op('PUT','/a/'+k,o)}
+function mark(id,d,on){setS(id,d,on?'H':null)}
 var T=[['dashboard','🏠','Dashboard'],['scan','📷','Scan'],['rekap','📋','Rekap'],['target','🎯','Target'],['jamaah','👥','Jamaah'],['admin','⚙️','Akun']];
 var tk='*',om=null,dk='*',ek=null,GS=[],tab='dashboard',rd=ymd(),rm=ymd().slice(0,7);
 function tabsFor(){return T.filter(function(t){var k=t[0];return R==='owner'||k==='dashboard'||k==='admin'||(R==='pengabsen'&&(k==='scan'||k==='rekap'))||(R==='lihat'&&(k==='rekap'||k==='target'))})}
@@ -135,7 +148,7 @@ function ic(k,z){z=z||22;return '<svg viewBox="0 0 24 24" width="'+z+'" height="
 function kg(){var g=kl();if(S.m.some(function(m){return !m.k||m.k==='-'}))g.push('-');return g}
 function gm(g){return S.m.filter(function(m){return g==='-'?(!m.k||m.k==='-'):m.k===g})}
 function gt(i,t){var g=GS[i];tk=g==='-'?'*':g;go(t)}
-function gcard(g,i){var ms=gm(g),td=ymd(),hd=ms.filter(function(m){return has(m.id,td)}).length,p=ms.length?Math.round(hd/ms.length*100):0,tt=0,dd=0;
+function gcard(g,i){var ms=gm(g),td=ymd(),hd=ms.filter(function(m){return hasH(m.id,td)}).length,p=ms.length?Math.round(hd/ms.length*100):0,tt=0,dd=0;
  ms.forEach(function(m){var ts=mt(m);tt+=ts.length;dd+=ts.filter(function(t){return dn(m.id,t.id)}).length});
  var tc=tt?Math.round(dd/tt*100):null;
  return '<div class="card gc"><div class="hd"><h3>'+esc(g==='-'?'Tanpa kelompok':g)+'</h3><div style="display:flex;gap:8px;align-items:center"><span class="tag">'+ms.length+' jamaah</span>'+(R==='owner'?'<button class="rb" style="width:36px;height:36px;flex:0 0 36px" onclick="ed('+i+')" aria-label="Edit kelompok" title="Edit">'+ic('edit',17)+'</button>':'')+'</div></div><div style="display:flex;justify-content:space-between;color:var(--mu);margin-top:8px"><span>Hari ini · '+hd+' hadir</span><b style="color:var(--tx)">'+(hd?p+'%':'Belum ada data')+'</b></div><div class="bar"><i style="width:'+p+'%"></i></div><small style="color:var(--mu);display:block;margin-top:8px">'+(tc===null?'Belum ada target pembelajaran':'Capaian target pembelajaran: '+tc+'%')+'</small><div class="acts">'+(okT('scan')?'<button class="pr" onclick="go(\'scan\')">Absen</button>':'')+(okT('rekap')?'<button onclick="go(\'rekap\')">Rekap</button>':'')+(okT('target')?'<button onclick="gt('+i+',\'target\')">Target</button>':'')+(okT('jamaah')?'<button onclick="go(\'jamaah\')">Jamaah</button>':'')+'</div></div>'}
@@ -154,9 +167,9 @@ function ev(){var g=ek,h='<button onclick="go(\'dashboard\')" style="margin-bott
   return '<div class="card"><small style="color:var(--mu)">Kode '+m.id+'</small><input value="'+esc(m.n)+'" onchange="rnM(\''+m.id+'\',this.value)" style="margin:6px 0 6px"><small style="color:var(--mu);display:block;margin-bottom:10px">Kehadiran bulan ini: '+ka(m.id)+'</small><div style="display:flex;justify-content:space-between"><b style="font-size:14px">Target pencapaian</b><b>'+c+'/'+ts.length+' ('+p+'%)</b></div><div class="bar"><i style="width:'+p+'%"></i></div>'+
   (ts.length?ts.map(function(t){return '<label class="ck"><input type="checkbox" '+(dn(m.id,t.id)?'checked':'')+(R==='owner'?'':' disabled')+' onchange="tp(\''+m.id+'\',\''+t.id+'\')"> '+esc(t.j)+(t.k==='*'?' <small>(semua)</small>':'')+'</label>'}).join(''):'<small style="display:block;color:var(--mu);margin-top:8px">Belum ada target. Tambahkan di atas.</small>')+'</div>'}).join('')+
   '<small style="color:var(--mu)">Ubah nama lalu tekan Enter atau ketuk di luar kolom untuk menyimpan.</small>'}
-function pct(id,ym){var ds={};S.a.forEach(function(a){if(!ym||a.d.slice(0,7)===ym)ds[a.d]=1});var t=Object.keys(ds).length,h=S.a.filter(function(a){return a.id===id&&(!ym||a.d.slice(0,7)===ym)}).length;return{h:h,t:t,p:t?Math.round(h/t*100):0}}
+function pct(id,ym){var ds={},c={H:0,I:0,S:0,A:0};S.a.forEach(function(a){if(!ym||a.d.slice(0,7)===ym){ds[a.d]=1;if(a.id===id)c[st(a)]=(c[st(a)]||0)+1}});var t=Object.keys(ds).length;return{h:c.H,i:c.I,s:c.S,a:c.A,t:t,p:t?Math.round(c.H/t*100):0}}
 function ka(id){var x=pct(id,ymd().slice(0,7));return x.h+'/'+x.t+' ('+x.p+'%)'}
-function pcard(){var t=pct('',rm).t;return '<div class="card" style="margin-top:12px"><h2>Persentase kehadiran per jamaah</h2><div class="row"><input type="month" value="'+rm+'" onchange="rm=this.value;render()"><button onclick="rm=\'\';render()">Semua waktu</button></div><small style="color:var(--mu);display:block;margin-bottom:6px">'+(rm?'Bulan '+rm:'Semua waktu')+' · '+t+' hari pertemuan tercatat</small>'+(S.m.length?sm().map(function(m){var x=pct(m.id,rm);return '<div class="li" style="display:block"><div style="display:flex;justify-content:space-between"><span>'+esc(m.n)+'<small>'+esc(m.k)+'</small></span><b>'+x.h+'/'+x.t+' ('+x.p+'%)</b></div><div class="bar"><i style="width:'+x.p+'%"></i></div></div>'}).join(''):'<small>Belum ada jamaah.</small>')+'</div>'}
+function pcard(){var t=pct('',rm).t;return '<div class="card" style="margin-top:12px"><h2>Persentase kehadiran per jamaah</h2><div class="row"><input type="month" value="'+rm+'" onchange="rm=this.value;render()"><button onclick="rm=\'\';render()">Semua waktu</button></div><small style="color:var(--mu);display:block;margin-bottom:6px">'+(rm?'Bulan '+rm:'Semua waktu')+' · '+t+' hari pertemuan tercatat</small>'+(S.m.length?sm().map(function(m){var x=pct(m.id,rm);return '<div class="li" style="display:block"><div style="display:flex;justify-content:space-between"><span>'+esc(m.n)+'<small>'+esc(m.k)+' · H'+x.h+' I'+x.i+' S'+x.s+' A'+x.a+'</small></span><b>'+x.h+'/'+x.t+' ('+x.p+'%)</b></div><div class="bar"><i style="width:'+x.p+'%"></i></div></div>'}).join(''):'<small>Belum ada jamaah.</small>')+'</div>'}
 var X={f:'',t:'',g:'*',a:1,b:1,c:0,s:';'};
 function dl(name,txt){var b=new Blob(['\ufeff'+txt],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800)}
 function xcard(){var ks=kl();
@@ -172,17 +185,17 @@ function xdl(){var ms=sm().filter(function(m){return X.g==='*'||m.k===X.g});
  if(!X.a&&!X.b&&!X.c){alert('Pilih minimal satu isi rekap.');return}
  var inR=function(a){return (!X.f||a.d>=X.f)&&(!X.t||a.d<=X.t)},ds={};S.a.forEach(function(a){if(inR(a))ds[a.d]=1});var tot=Object.keys(ds).length,tgs=[];
  if(X.c){var seen={};ms.forEach(function(m){mt(m).forEach(function(t){if(!seen[t.id]){seen[t.id]=1;tgs.push(t)}})});tgs.sort(function(a,b){return cmp(a.k+a.j,b.k+b.j)})}
- var hd=['Nama','Kelompok'];if(X.a)hd.push('Hadir','Total pertemuan','Kehadiran (%)');if(X.b)hd.push('Target tercapai','Total target','Capaian target (%)');
+ var hd=['Nama','Kelompok'];if(X.a)hd.push('Hadir','Izin','Sakit','Alfa','Total pertemuan','Kehadiran (%)');if(X.b)hd.push('Target tercapai','Total target','Capaian target (%)');
  tgs.forEach(function(t){hd.push(t.j+(t.k==='*'?'':' ('+t.k+')'))});
  var rows=[hd];
  ms.forEach(function(m){var r=[m.n,m.k||'-'],ts=mt(m),c=ts.filter(function(t){return dn(m.id,t.id)}).length;
-  if(X.a){var h=S.a.filter(function(a){return a.id===m.id&&inR(a)}).length;r.push(h,tot,tot?Math.round(h/tot*100):0)}
+  if(X.a){var c2={H:0,I:0,S:0,A:0};S.a.forEach(function(a){if(a.id===m.id&&inR(a))c2[st(a)]=(c2[st(a)]||0)+1});r.push(c2.H,c2.I,c2.S,c2.A,tot,tot?Math.round(c2.H/tot*100):0)}
   if(X.b)r.push(c,ts.length,ts.length?Math.round(c/ts.length*100):0);
   tgs.forEach(function(t){r.push(ts.some(function(x){return x.id===t.id})?(dn(m.id,t.id)?'Ya':'Belum'):'-')});
   rows.push(r)});
  var q=function(v){v=String(v);if(/^[=+\-@]/.test(v))v="'"+v;return /[";,\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
  dl('rekap-absensi-'+(X.g==='*'?'semua':X.g.replace(/[^a-z0-9]+/gi,'-'))+'-'+ymd()+'.csv',rows.map(function(r){return r.map(q).join(X.s)}).join('\r\n'))}
-var TRS=[['dashboard','Selamat Datang!','Aplikasi ini membantu mencatat kehadiran dan capaian belajar jamaah dengan cepat, langsung dari HP.'],['jamaah','Siapkan Kelompok','Mulai dari menu Jamaah: tambahkan nama dan isi kolom kelompoknya. Kelompok akan muncul sendiri di beranda.'],['target','Tentukan Target','Di menu Target, tulis target pembelajaran untuk semua kelompok atau khusus satu kelompok, lalu centang capaian tiap jamaah.'],['scan','Catat Kehadiran','Saat pengajian, buka Scan dan masukkan atau pindai kode jamaah. Koreksi manual bisa dilakukan lewat menu Rekap.'],['rekap','Lihat dan Unduh Rekap','Pantau persentase kehadiran dan capaian target tiap jamaah, lalu unduh sebagai CSV sesuai pilihan Anda.']],tri=0;
+var TRS=[['dashboard','Selamat Datang!','Aplikasi ini membantu mencatat kehadiran dan capaian belajar jamaah dengan cepat, langsung dari HP.'],['jamaah','Siapkan Kelompok','Mulai dari menu Jamaah: tambahkan nama dan isi kolom kelompoknya. Kelompok akan muncul sendiri di beranda.'],['target','Tentukan Target','Di menu Target, tulis target pembelajaran untuk semua kelompok atau khusus satu kelompok, lalu centang capaian tiap jamaah.'],['scan','Catat Kehadiran','Saat pengajian, buka Scan dan masukkan atau pindai kode jamaah. Atau tandai manual di menu Rekap dengan H (hadir), I (izin), S (sakit), dan A (alfa).'],['rekap','Lihat dan Unduh Rekap','Pantau persentase kehadiran dan capaian target tiap jamaah, lalu unduh sebagai CSV sesuai pilihan Anda.']],tri=0;
 function tr(){var o=document.getElementById('tour');if(!o){o=document.createElement('div');o.id='tour';document.body.appendChild(o)}
  var d=TRS[tri],last=tri===TRS.length-1;o.style.display='flex';
  o.innerHTML='<div class="tb" onclick="tc()"></div><div class="ts"><div class="td">'+TRS.map(function(x,j){return '<i class="'+(j===tri?'on':'')+'"></i>'}).join('')+'</div><div class="tic">'+ic(d[0],34)+'</div><h2>'+d[1]+'</h2><p>'+d[2]+'</p><div class="tbn">'+(tri?'<button onclick="tr2(-1)">Kembali</button>':'')+'<button class="pr" onclick="'+(last?'tc()':'tr2(1)')+'">'+(last?'Mulai':'Lanjut')+'</button></div>'+(last?'':'<a class="tl" onclick="tc()">Lewati</a>')+'</div>'}
@@ -216,7 +229,9 @@ function render(){
  }else if(tab==='scan'){
   h='<div class="card"><h2>Scan / input kode</h2><div class="row"><input id="kd" placeholder="Kode jamaah, mis. G001" autocomplete="off" onkeydown="if(event.key===\'Enter\')sc()"><button class="pr" onclick="sc()">Catat</button></div><button onclick="cam()">Buka kamera (scan QR)</button><video id="vd" playsinline muted hidden></video>'+msg()+'<small style="color:var(--mu)">Alat scan barcode/QR USB atau Bluetooth juga bisa dipakai: arahkan kursor ke kolom di atas.</small></div><div class="card"><h2>Hadir hari ini ('+hi+')</h2>'+list(td).map(row).join('')+'</div>';
  }else if(tab==='rekap'){
-  h='<div class="card"><h2>Rekap harian</h2><input type="date" value="'+rd+'" onchange="rd=this.value;render()"></div><div class="card">'+(n?sm().map(function(m){var a=has(m.id,rd);return '<div class="li"><div>'+esc(m.n)+'<small>'+esc(m.k)+' · '+m.id+'</small></div><button class="tag '+(a?'ok':'')+'" onclick="tg(\''+m.id+'\')">'+(a?'Hadir '+a.t:'Belum hadir')+'</button></div>'}).join(''):'<small>Belum ada jamaah.</small>')+'</div><small style="color:var(--mu)">Urut abjad. Ketuk status untuk mengubah manual.</small>'+pcard()+xcard();
+  var cn=R==='owner'||R==='pengabsen',sums={H:0,I:0,S:0,A:0},KS=['H','I','S','A'];
+  S.m.forEach(function(m){var r=has(m.id,rd);if(r)sums[st(r)]=(sums[st(r)]||0)+1});
+  h='<div class="card"><h2>Rekap harian</h2><input type="date" value="'+rd+'" onchange="rd=this.value;render()"><small style="color:var(--mu);display:block;margin-top:8px">Hadir '+sums.H+' · Izin '+sums.I+' · Sakit '+sums.S+' · Alfa '+sums.A+' · Belum diisi '+Math.max(S.m.length-sums.H-sums.I-sums.S-sums.A,0)+'</small></div><div class="card"><div class="sg sh"><span>Nama</span>'+KS.map(function(k){return '<b class="c'+k+'">'+k+'</b>'}).join('')+'</div>'+(n?sm().map(function(m){var r=has(m.id,rd),cur=r?st(r):'';return '<div class="sg sr"><div>'+esc(m.n)+'<small>'+esc(m.k)+'</small></div>'+KS.map(function(k){return '<button class="sb c'+k+(cur===k?' on':'')+'"'+(cn?'':' disabled')+' onclick="tg(\''+m.id+'\',\''+k+'\')">'+k+'</button>'}).join('')+'</div>'}).join(''):'<small>Belum ada jamaah.</small>')+'</div><small style="color:var(--mu)">H = Hadir · I = Izin · S = Sakit · A = Alfa. Ketuk huruf untuk mengisi, ketuk lagi untuk mengosongkan.</small>'+pcard()+xcard();
  }else if(tab==='target'){
   var ow=R==='owner',ks=kl();if(tk!=='*'&&ks.indexOf(tk)<0)tk='*';
   var tgs=S.tg.filter(function(t){return t.k===tk}).sort(function(x,y){return cmp(x.j,y.j)}),ms=tk==='*'?sm():sm().filter(function(m){return m.k===tk});
@@ -263,10 +278,10 @@ function rmMem(k){if(!confirm('Keluarkan pengurus ini?'))return;raw('DELETE','/i
 function sc(v){var i=document.getElementById('kd');v=(v||i.value).trim().toUpperCase();if(!v)return;
  var m=S.m.find(function(x){return x.id===v});
  if(!m)note=['no','Kode '+v+' tidak ditemukan.'];
- else if(has(v,ymd()))note=['no',m.n+' sudah absen hari ini.'];
+ else if(hasH(v,ymd()))note=['no',m.n+' sudah absen hari ini.'];
  else{mark(v,ymd(),true);note=['ok','✓ '+m.n+' tercatat hadir.']}
  render();var e=document.getElementById('kd');if(e)e.focus()}
-function tg(id){if(R!=='owner'&&R!=='pengabsen')return;mark(id,rd,!has(id,rd));render()}
+function tg(id,sv){if(R!=='owner'&&R!=='pengabsen')return;var h=has(id,rd);setS(id,rd,h&&st(h)===sv?null:sv);render()}
 function add(){var n=val('nn'),k=val('nk');if(!n)return;
  var x=1;while(S.m.some(function(m){return m.id==='G'+String(x).padStart(3,'0')}))x++;
  var o={id:'G'+String(x).padStart(3,'0'),n:n,k:k||'-'};S.m.push(o);op('PUT','/m/'+o.id,o);render()}
