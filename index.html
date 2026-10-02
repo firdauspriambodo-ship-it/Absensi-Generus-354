@@ -81,25 +81,29 @@ video{width:100%;border-radius:10px;margin-top:8px}
 <main id="v"></main>
 <nav id="nav"></nav>
 <script>
-var LK='absensi_generus_v1',CK='absensi_cfg',SK='absensi_sess',S={m:[],a:[],t:4,tg:[],pr:[],adm:[]},U='',me=null,okk=null,note=null;
-try{U=(JSON.parse(localStorage.getItem(CK))||{}).url||''}catch(e){}
-try{me=localStorage.getItem(SK)}catch(e){}
-if(!U){try{var _l=JSON.parse(localStorage.getItem(LK));if(_l){S=_l;S.adm=S.adm||[];S.tg=S.tg||[];S.pr=S.pr||[]}}catch(e){}}
+var FB_URL='https://absensi-generus-5eb15-default-rtdb.asia-southeast1.firebasedatabase.app',FB_KEY='AIzaSyCxqBkk88M6VYmIwm4ooZO5bp2XL2mnCDo';
+var AK='absensi_auth_v2',KK='absensi_fbkey',S={m:[],a:[],t:4,tg:[],pr:[]},AU=null,me=null,okk=null,note=null,FK=FB_KEY,amode='in';
+function nmE(e){return String(e||'').split('@')[0]}
+try{AU=JSON.parse(localStorage.getItem(AK));if(AU&&AU.uid)me=nmE(AU.email);else AU=null}catch(e){AU=null}
+try{if(!FK)FK=localStorage.getItem(KK)||''}catch(e){}
 function ymd(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function cl(u){return String(u).toLowerCase().replace(/[^a-z0-9_-]/g,'')}
 function val(id){return document.getElementById(id).value.trim()}
 function cmp(a,b){return String(a).localeCompare(String(b),'id',{sensitivity:'base'})}
 var WHY='';
-function why(e){var st=e&&e.st;if(st===401||st===403)return 'Aturan database menolak akses. Publish aturan di tab Rules.';if(st===404)return 'Alamat database tidak ditemukan.';if(st)return 'Server membalas kode '+st+'.';if(!/^https?:$/.test(location.protocol))return 'Halaman dibuka dari file ('+location.protocol+'), bukan tautan https.';return 'Tidak bisa menjangkau server. Periksa alamat dan internet.'}
-function api(m,p,v){return fetch(U+'/absensi'+p+'.json',{method:m,body:v===undefined?undefined:JSON.stringify(v)}).then(function(r){if(!r.ok){var x=new Error('HTTP '+r.status);x.st=r.status;throw x}return r.json()})}
-function stat(b){okk=b;var tx=(U?(b===false?'● Tidak terhubung · '+WHY:'● Terhubung · data bersama'):'Mode lokal · data hanya di perangkat ini')+(me?' · '+me:'');Array.prototype.forEach.call(document.querySelectorAll('.stt'),function(e){e.textContent=tx})}
-function op(m,p,v){if(!U){try{localStorage.setItem(LK,JSON.stringify(S))}catch(e){}return}
- api(m,p,v).then(function(){stat(true)}).catch(function(e){WHY=why(e);stat(false);alert('Gagal menyimpan ke server. '+WHY)})}
+function why(e){var st=e&&e.st;if(e&&e.msg)return e.msg;if(st===401||st===403)return 'Akses ditolak. Masuk ulang atau periksa aturan database.';if(st===404)return 'Alamat database tidak ditemukan.';if(st)return 'Server membalas kode '+st+'.';return 'Tidak bisa menjangkau server. Periksa internet.'}
+function amsg(m){m=String(m);if(/EMAIL_EXISTS/.test(m))return 'Email sudah terdaftar. Silakan masuk.';if(/WEAK_PASSWORD/.test(m))return 'Kata sandi terlalu lemah (minimal 6 karakter).';if(/INVALID_EMAIL/.test(m))return 'Format email tidak valid.';if(/EMAIL_NOT_FOUND|INVALID_PASSWORD|INVALID_LOGIN_CREDENTIALS/.test(m))return 'Email atau kata sandi salah.';if(/TOO_MANY_ATTEMPTS/.test(m))return 'Terlalu banyak percobaan. Coba lagi nanti.';if(/OPERATION_NOT_ALLOWED|CONFIGURATION_NOT_FOUND/.test(m))return 'Login email belum diaktifkan di Firebase (menu Authentication).';if(/API.?KEY/i.test(m))return 'Web API key tidak valid.';return 'Gagal: '+m}
+function jf(url,body,form){return fetch(url,{method:'POST',headers:{'Content-Type':form?'application/x-www-form-urlencoded':'application/json'},body:form?body:JSON.stringify(body)}).then(function(r){return r.json().then(function(j){if(!r.ok){var m=(j&&j.error&&j.error.message)||'',x=new Error(m);x.msg=amsg(m);x.st=r.status;throw x}return j})})}
+function setAU(j,email){AU={email:email||AU.email,uid:j.localId||j.user_id,it:j.idToken||j.id_token,rt:j.refreshToken||j.refresh_token,exp:Date.now()+(+(j.expiresIn||j.expires_in)||3600)*1000};try{localStorage.setItem(AK,JSON.stringify(AU))}catch(e){}me=nmE(AU.email)}
+function tok(){if(!AU)return Promise.reject(new Error('x'));if(Date.now()<AU.exp-60000)return Promise.resolve(AU.it);
+ return jf('https://securetoken.googleapis.com/v1/token?key='+FK,'grant_type=refresh_token&refresh_token='+encodeURIComponent(AU.rt),true).then(function(j){setAU(j,AU.email);return AU.it}).catch(function(e){if(e.st===400)lo();throw e})}
+function api(m,p,v){return tok().then(function(t){return fetch(FB_URL+'/users/'+AU.uid+p+'.json?auth='+encodeURIComponent(t),{method:m,body:v===undefined?undefined:JSON.stringify(v)})}).then(function(r){if(!r.ok){var x=new Error('HTTP '+r.status);x.st=r.status;throw x}return r.json()})}
+function stat(b){okk=b;var tx=(b===false?'● Tidak terhubung · '+WHY:'● Tersambung · data tersimpan online')+(AU?' · '+AU.email:'');Array.prototype.forEach.call(document.querySelectorAll('.stt'),function(e){e.textContent=tx})}
+function op(m,p,v){api(m,p,v).then(function(){stat(true)}).catch(function(e){WHY=why(e);stat(false);alert('Gagal menyimpan ke server. '+WHY)})}
 function arr(o){return o?Object.keys(o).map(function(k){var v=o[k];if(!v.id)v.id=k;return v}):[]}
-function load(){if(!U)return Promise.resolve();
- return api('GET','').then(function(d){d=d||{};S={m:arr(d.m),a:arr(d.a),t:d.t||4,tg:arr(d.tg),pr:arr(d.pr),adm:Object.keys(d.adm||{}).map(function(k){return{u:k,p:d.adm[k].p}})};stat(true)}).catch(function(e){WHY=why(e);stat(false)})}
-function hs(p){try{return crypto.subtle.digest('SHA-256',new TextEncoder().encode('abs:'+p)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return('0'+x.toString(16)).slice(-2)}).join('')})}catch(e){return Promise.resolve('p:'+btoa(p))}}
+function load(){if(!AU)return Promise.resolve();
+ return api('GET','').then(function(d){d=d||{};S={m:arr(d.m),a:arr(d.a),t:d.t||4,tg:arr(d.tg),pr:arr(d.pr)};stat(true)}).catch(function(e){WHY=why(e);stat(false)})}
 function sm(){return S.m.slice().sort(function(a,b){return cmp(a.n,b.n)})}
 function has(id,d){return S.a.find(function(x){return x.id===id&&x.d===d})}
 function nm(id){var m=S.m.find(function(x){return x.id===id});return m?m.n:id}
@@ -107,12 +111,11 @@ function list(d){return S.a.filter(function(x){return x.d===d}).sort(function(a,
 function mark(id,d,on){var h=has(id,d),k=id+'_'+d;
  if(on&&!h){var o={id:id,d:d,t:new Date().toTimeString().slice(0,5),by:me};S.a.push(o);op('PUT','/a/'+k,o)}
  else if(!on&&h){S.a=S.a.filter(function(x){return x!==h});op('DELETE','/a/'+k)}}
-var T=[['dashboard','🏠','Dashboard'],['scan','📷','Scan'],['rekap','📋','Rekap'],['target','🎯','Target'],['jamaah','👥','Jamaah'],['admin','⚙️','Admin']];
+var T=[['dashboard','🏠','Dashboard'],['scan','📷','Scan'],['rekap','📋','Rekap'],['target','🎯','Target'],['jamaah','👥','Jamaah'],['admin','⚙️','Akun']];
 var tk='*',om=null,dk='*',ek=null,GS=[],tab='dashboard',rd=ymd(),rm=ymd().slice(0,7);
 function go(t){tab=t;note=null;render()}
 function msg(){return note?'<div class="msg '+note[0]+'">'+esc(note[1])+'</div>':''}
 function row(x){return '<div class="li"><div>'+esc(nm(x.id))+'<small>'+x.id+(x.by?' · dicatat '+esc(x.by):'')+'</small></div><span class="tag ok">'+x.t+'</span></div>'}
-function conn(){return '<div class="card"><h2>Koneksi data bersama</h2><input id="cu" placeholder="https://NAMA-PROYEK-default-rtdb.firebaseio.com" value="'+esc(U)+'" style="margin-bottom:8px"><button onclick="svU()" style="width:100%">Simpan koneksi</button><small style="color:var(--mu);display:block;margin-top:6px">Kosongkan untuk mode lokal (satu perangkat). Isi URL Firebase Realtime Database agar beberapa admin memakai data yang sama.</small></div>'}
 var IC={dashboard:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',scan:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M4 12h16"/>',rekap:'<path d="M5 21V10M12 21V4M19 21v-7"/>',target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',jamaah:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2.3.6 4 2.5 4 5.5"/>',admin:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',sukses:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',tobiat:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',tali:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',kerja:'<path d="M3 8h18v12H3zM9 8V5h6v3M3 13h18"/>',qodar:'<path d="M6 3h12M6 21h12M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9"/>',roda:'<path d="M20 12a8 8 0 0 1-13.7 5.6M4 12a8 8 0 0 1 13.7-5.6M18 3v3.5h-3.5M6 21v-3.5h3.5"/>',rukun:'<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>',edit:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',plus:'<path d="M12 5v14M5 12h14"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/>'};
 function ic(k,z){z=z||22;return '<svg viewBox="0 0 24 24" width="'+z+'" height="'+z+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+IC[k]+'</svg>'}
 function kg(){var g=kl();if(S.m.some(function(m){return !m.k||m.k==='-'}))g.push('-');return g}
@@ -186,8 +189,8 @@ function home(){var im=document.querySelector('#sp img'),n=S.m.length;GS=kg();va
 function render(){
  document.querySelector('header').style.display=(me&&tab==='dashboard')?'none':'';
  var nv=document.getElementById('nav'),v=document.getElementById('v'),h='',td=ymd(),n=S.m.length,hi=list(td).length;
- if(!me){nv.style.display='none';var f=!S.adm.length;
-  v.innerHTML='<div class="card"><h2>'+(f?'Buat admin pertama':'Login admin')+'</h2><input id="lu" placeholder="Username" autocapitalize="none" style="margin-bottom:8px"><input id="lp" type="password" placeholder="PIN / password (min. 4 karakter)" onkeydown="if(event.key===\'Enter\')lg()" style="margin-bottom:8px"><button class="pr" style="width:100%" onclick="lg()">'+(f?'Buat &amp; masuk':'Masuk')+'</button>'+msg()+'</div>'+conn();stat(okk);return}
+ if(!me){nv.style.display='none';var up=amode==='up';
+  v.innerHTML='<div class="card"><h2>'+(up?'Daftar akun baru':'Masuk')+'</h2>'+(FK?'':'<input id="lk" placeholder="Web API key Firebase" style="margin-bottom:8px">')+'<input id="lu" type="email" placeholder="Email" autocapitalize="none" style="margin-bottom:8px"><input id="lp" type="password" placeholder="Kata sandi (min. 6 karakter)" onkeydown="if(event.key===\'Enter\')lg()" style="margin-bottom:8px"><button class="pr" style="width:100%" onclick="lg()">'+(up?'Daftar':'Masuk')+'</button>'+msg()+'<div style="display:flex;justify-content:space-between;margin-top:12px;font-size:14px"><a style="color:var(--pr);cursor:pointer" onclick="am(\''+(up?'in':'up')+'\')">'+(up?'Sudah punya akun? Masuk':'Belum punya akun? Daftar')+'</a>'+(up?'':'<a style="color:var(--mu);cursor:pointer" onclick="fg()">Lupa kata sandi?</a>')+'</div></div><small style="color:var(--mu)">Data tiap akun terpisah: kelompok dan jamaah Anda hanya bisa dibuka dengan akun Anda sendiri.</small>';stat(okk);return}
  nv.style.display='flex';
  nv.innerHTML=T.map(function(t){return '<a class="'+(t[0]===tab?'on':'')+'" onclick="go(\''+t[0]+'\')" title="'+t[2]+'"><span>'+ic(t[0])+'</span>'+t[2]+'</a>'}).join('');
  if(tab==='dashboard'){
@@ -209,7 +212,7 @@ function render(){
  }else if(tab==='jamaah'){
   h='<div class="card"><h2>Tambah jamaah</h2><div class="row"><input id="nn" placeholder="Nama"><input id="nk" placeholder="Kelompok" list="kls"></div><datalist id="kls">'+kl().map(function(k){return '<option value="'+esc(k)+'">'}).join('')+'</datalist><button class="pr" style="width:100%" onclick="add()">Tambah</button></div><div class="card"><h2>Daftar jamaah ('+n+') · A–Z</h2>'+sm().map(function(m){return '<div class="li"><div>'+esc(m.n)+'<small>'+esc(m.k)+' · kode '+m.id+'</small></div><button class="del" onclick="rmM(\''+m.id+'\')">Hapus</button></div>'}).join('')+'</div>';
  }else{
-  h='<div class="card"><h2>Admin ('+S.adm.length+') · A–Z</h2>'+S.adm.slice().sort(function(a,b){return cmp(a.u,b.u)}).map(function(a){return '<div class="li"><div>'+esc(a.u)+(a.u===me?'<small>Anda</small>':'')+'</div>'+(a.u!==me&&S.adm.length>1?'<button class="del" onclick="dA(\''+a.u+'\')">Hapus</button>':'')+'</div>'}).join('')+'</div><div class="card"><h2>Tambah admin</h2><input id="au" placeholder="Username" autocapitalize="none" style="margin-bottom:8px"><input id="ap" type="password" placeholder="PIN / password (min. 4 karakter)" style="margin-bottom:8px"><button class="pr" style="width:100%" onclick="aA()">Tambah admin</button>'+msg()+'</div>'+conn()+'<button class="del" style="width:100%" onclick="lo()">Keluar</button>';
+  h='<div class="card"><h2>Akun</h2><div class="li"><div>'+esc(AU.email)+'<small>Data Anda tersimpan online dan hanya bisa dibuka dengan akun ini.</small></div></div></div><button class="del" style="width:100%" onclick="lo()">Keluar</button>';
  }
  v.innerHTML=h;stat(okk);
 }
@@ -219,21 +222,14 @@ function dn(mid,tid){return S.pr.find(function(p){return p.id===mid&&p.t===tid})
 function aT(){var j=val('tj');if(!j)return;var o={id:'T'+Date.now().toString(36),k:tk,j:j};S.tg.push(o);op('PUT','/tg/'+o.id,o);render()}
 function dT(id){if(!confirm('Hapus target ini?'))return;S.pr.filter(function(p){return p.t===id}).forEach(function(p){op('DELETE','/pr/'+p.id+'_'+id)});S.pr=S.pr.filter(function(p){return p.t!==id});S.tg=S.tg.filter(function(t){return t.id!==id});op('DELETE','/tg/'+id);render()}
 function tp(mid,tid){var h=dn(mid,tid),k=mid+'_'+tid;if(h){S.pr=S.pr.filter(function(x){return x!==h});op('DELETE','/pr/'+k)}else{var o={id:mid,t:tid,by:me};S.pr.push(o);op('PUT','/pr/'+k,o)}render()}
-function lg(){var u=cl(val('lu')),p=document.getElementById('lp').value;
- if(!u||p.length<4){note=['no','Isi username dan PIN (minimal 4 karakter).'];return render()}
- hs(p).then(function(h){
-  if(!S.adm.length){S.adm.push({u:u,p:h});op('PUT','/adm/'+u,{p:h});en(u)}
-  else{var x=S.adm.find(function(a){return a.u===u});if(x&&x.p===h)en(u);else{note=['no','Username atau PIN salah.'];render()}}})}
-function en(u){me=u;try{localStorage.setItem(SK,u)}catch(e){}note=null;tab='dashboard';render()}
-function lo(){me=null;try{localStorage.removeItem(SK)}catch(e){}note=null;render()}
-function aA(){var u=cl(val('au')),p=document.getElementById('ap').value;
- if(!u||p.length<4){note=['no','Isi username dan PIN (minimal 4 karakter).'];return render()}
- if(S.adm.some(function(a){return a.u===u})){note=['no','Username sudah ada.'];return render()}
- hs(p).then(function(h){S.adm.push({u:u,p:h});op('PUT','/adm/'+u,{p:h});note=['ok','Admin '+u+' ditambahkan.'];render()})}
-function dA(u){if(!confirm('Hapus admin '+u+'?'))return;S.adm=S.adm.filter(function(a){return a.u!==u});op('DELETE','/adm/'+u);render()}
-function svU(){var u=val('cu').replace(/\s+/g,'');if(u&&!/^https?:\/\//i.test(u))u='https://'+u;if(u){try{u=new URL(u).origin}catch(e){alert('Alamat tidak valid.');return}if(u.indexOf('https://')!==0){alert('Alamat harus diawali https://');return}}
- U=u;try{localStorage.setItem(CK,JSON.stringify({url:U}))}catch(e){}
- if(U){load().then(function(){if(okk===false)alert('Belum tersambung: '+WHY);if(me&&!S.adm.some(function(a){return a.u===me}))me=null;render()})}else{S={m:[],a:[],t:4,tg:[],pr:[],adm:[]};me=null;try{var l=JSON.parse(localStorage.getItem(LK));if(l)S=l;S.adm=S.adm||[];S.tg=S.tg||[];S.pr=S.pr||[]}catch(e){}render()}}
+function lg(){var em=val('lu').toLowerCase(),pw=document.getElementById('lp').value;
+ if(!FK){var k=val('lk');if(!k){note=['no','Isi Web API key Firebase terlebih dahulu.'];return render()}FK=k;try{localStorage.setItem(KK,k)}catch(e){}}
+ if(!/^\S+@\S+\.\S+$/.test(em)||pw.length<6){note=['no','Isi email yang valid dan kata sandi minimal 6 karakter.'];return render()}
+ jf('https://identitytoolkit.googleapis.com/v1/accounts:'+(amode==='up'?'signUp':'signInWithPassword')+'?key='+FK,{email:em,password:pw,returnSecureToken:true}).then(function(j){setAU(j,em);note=null;tab='dashboard';return load()}).then(render).catch(function(e){note=['no',e.msg||'Tidak bisa menjangkau server. Periksa internet.'];render()})}
+function fg(){var em=val('lu').toLowerCase();if(!/^\S+@\S+\.\S+$/.test(em)){note=['no','Isi email Anda dulu di kolom email.'];return render()}
+ jf('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key='+FK,{requestType:'PASSWORD_RESET',email:em}).then(function(){note=['ok','Tautan atur ulang kata sandi dikirim ke '+em+'.'];render()}).catch(function(e){note=['no',e.msg||'Gagal mengirim.'];render()})}
+function am(m){amode=m;note=null;render()}
+function lo(){AU=null;me=null;S={m:[],a:[],t:4,tg:[],pr:[]};try{localStorage.removeItem(AK)}catch(e){}note=null;tab='dashboard';render()}
 function sc(v){var i=document.getElementById('kd');v=(v||i.value).trim().toUpperCase();if(!v)return;
  var m=S.m.find(function(x){return x.id===v});
  if(!m)note=['no','Kode '+v+' tidak ditemukan.'];
@@ -254,9 +250,9 @@ async function cam(){
   (function lp(){if(tab!=='scan'){st.getTracks().forEach(function(t){t.stop()});return}
    d.detect(v).then(function(r){if(r.length){st.getTracks().forEach(function(t){t.stop()});sc(r[0].rawValue)}else setTimeout(lp,300)}).catch(function(){setTimeout(lp,300)})})();
  }catch(e){note=['no','Kamera/scan QR tidak tersedia di perangkat ini. Ketik kode secara manual.'];render()}}
-setInterval(function(){var e=document.activeElement;if(U&&me&&!(e&&(e.tagName==='INPUT'||e.tagName==='SELECT')))load().then(render)},7000);
+setInterval(function(){var e=document.activeElement;if(AU&&me&&!(e&&(e.tagName==='INPUT'||e.tagName==='SELECT')))load().then(render)},7000);
 render();
-load().then(function(){if(me&&U&&S.adm.length&&!S.adm.some(function(a){return a.u===me}))me=null;render()});
+load().then(render);
 </script>
 </body>
 </html>
