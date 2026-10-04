@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#187A5A">
+<title>Kebijakan Privasi · Absensi Generus</title>
+<style>
+:root{box-sizing:border-box}*{box-sizing:border-box}
+body{margin:0;background:#FCFAF4;color:#26332E;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:#187A5A;color:#fff;padding:18px;border-bottom:4px solid #D6B45C}
+header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:13px;opacity:.9}
+main{max-width:720px;margin:0 auto;padding:16px 16px 40px}
+h2{font-size:17px;margin:22px 0 6px;color:#187A5A}
+p,li{margin:6px 0}ul{padding-left:20px}
+.card{background:#fff;border:1px solid #E8E3D3;border-radius:14px;padding:4px 16px 14px}
+a{color:#187A5A}
+.back{display:inline-block;margin-bottom:10px}
+small{color:#6d7a73}
+.ph{background:#FBF0C4;padding:0 4px}
+</style>
+</head>
+<body>
+<header><h1>Kebijakan Privasi</h1><p>Absensi Generus · Sistem Absensi Generasi Penerus</p></header>
+<main>
+<a class="back" href="./">← Kembali ke aplikasi</a>
+<div class="card">
+<small>Terakhir diperbarui: 4 Oktober 2026</small>
+
+<h2>Tentang aplikasi</h2>
+<p>Absensi Generus adalah aplikasi untuk mencatat kehadiran dan capaian belajar jamaah pengajian. Aplikasi ini dipakai oleh pengurus kelompok, bukan oleh umum.</p>
+
+<h2>Data yang kami simpan</h2>
+<ul>
+<li><b>Akun pengurus:</b> alamat email dan kata sandi. Kata sandi diproses oleh Firebase Authentication (Google) dan tidak dapat dibaca oleh pengelola aplikasi.</li>
+<li><b>Akun Lihat Laporan:</b> username dan kata sandi yang dibuat oleh Owner kelompok. Kata sandinya juga diproses oleh Firebase dan tidak dapat dilihat kembali oleh siapa pun.</li>
+<li><b>Data kelompok:</b> nama kelompok, nama jamaah, kelompok, status kehadiran (Hadir, Izin, Sakit, Alfa) beserta tanggal, jam, dan nama pengurus yang mencatat, serta target pembelajaran, capaiannya, dan tanggal tercapai.</li>
+<li><b>Daftar pengurus:</b> email atau username yang ditambahkan Owner ke sebuah kelompok beserta perannya.</li>
+<li><b>Di perangkat Anda:</b> token masuk dan pilihan kelompok disimpan di penyimpanan browser agar Anda tidak perlu masuk berulang kali. Data ini terhapus saat Anda menekan Keluar.</li>
+</ul>
+
+<h2>Untuk apa data dipakai</h2>
+<p>Hanya untuk menjalankan aplikasi: menampilkan daftar jamaah, mencatat absensi, menghitung persentase kehadiran dan capaian target, serta membuat rekap. Data tidak dipakai untuk iklan atau pelacakan, dan tidak dijual.</p>
+
+<h2>Siapa yang dapat melihat</h2>
+<ul>
+<li>Data sebuah kelompok hanya dapat dibuka oleh pengurus atau pemilik akun yang terdaftar di kelompok itu.</li>
+<li><b>Owner:</b> akses penuh. <b>Ustadz/Ustadzah:</b> mengisi absensi dan capaian target. <b>Lihat Laporan:</b> hanya melihat daftar hadir dan target pencapaian, baik lewat email maupun lewat username yang dibuat Owner.</li>
+<li>Akun dari kelompok lain tidak dapat melihat data Anda.</li>
+<li>Secara teknis, pengelola proyek Firebase aplikasi ini memiliki akses ke basis data melalui konsol Firebase.</li>
+</ul>
+
+<h2>Berbagi rekap</h2>
+<p>Tombol Bagikan pada halaman rekap per jamaah membuat teks ringkasan (nama, kehadiran, dan capaian target) yang dapat Anda kirim lewat aplikasi lain, misalnya WhatsApp. Anda sendiri yang memilih tujuannya. Pastikan hanya dibagikan kepada pihak yang berhak, misalnya orang tua atau wali jamaah yang bersangkutan.</p>
+
+<h2>Penyimpanan dan pihak ketiga</h2>
+<p>Data disimpan di Google Firebase (Realtime Database, wilayah Singapura). Halaman aplikasi di-host di GitHub Pages. Huruf Arab dimuat dari Google Fonts, sehingga Google dapat menerima alamat IP perangkat Anda saat huruf itu diunduh. Aplikasi tidak memakai layanan analitik, iklan, lokasi, atau akses ke kontak.</p>
+
+<h2>Izin perangkat</h2>
+<p>Kamera hanya diminta saat Anda memakai fitur scan QR, dan boleh ditolak. Gambar kamera tidak disimpan maupun dikirim.</p>
+
+<h2>Data anak</h2>
+<p>Daftar jamaah dapat memuat anak-anak. Pengurus yang memasukkan data bertanggung jawab memastikan ada izin dari orang tua atau wali, serta hanya memasukkan data yang diperlukan.</p>
+
+<h2>Menghapus data</h2>
+<p>Owner dapat menghapus jamaah, target, pengurus, dan akun Lihat Laporan dari dalam aplikasi. Untuk menghapus akun atau seluruh data kelompok, hubungi kontak di bawah.</p>
+
+<h2>Perubahan kebijakan</h2>
+<p>Jika kebijakan ini berubah, tanggal pembaruan di atas akan diganti.</p>
+
+<h2>Kontak</h2>
+<p>Pertanyaan tentang data: <span class="ph">isi-email-kontak@contoh.com</span></p>
+</div>
+</main>
+</body>
+</html>
