@@ -26,7 +26,7 @@ small{color:#6d7a73}
 <main>
 <a class="back" href="./">← Kembali ke aplikasi</a>
 <div class="card">
-<small>Terakhir diperbarui: 4 Oktober 2026</small>
+<small>Terakhir diperbarui: 7 Oktober 2026</small>
 
 <h2>Tentang aplikasi</h2>
 <p>Absensi Generus adalah aplikasi untuk mencatat kehadiran dan capaian belajar jamaah pengajian. Aplikasi ini dipakai oleh pengurus kelompok, bukan oleh umum.</p>
@@ -34,9 +34,9 @@ small{color:#6d7a73}
 <h2>Data yang kami simpan</h2>
 <ul>
 <li><b>Akun pengurus:</b> alamat email dan kata sandi. Kata sandi diproses oleh Firebase Authentication (Google) dan tidak dapat dibaca oleh pengelola aplikasi.</li>
-<li><b>Akun Lihat Laporan:</b> username dan kata sandi yang dibuat oleh Owner kelompok. Kata sandinya juga diproses oleh Firebase dan tidak dapat dilihat kembali oleh siapa pun.</li>
+<li><b>Akun Lihat Laporan:</b> username dan kata sandi yang dibuat oleh Admin kelompok. Kata sandinya juga diproses oleh Firebase dan tidak dapat dilihat kembali oleh siapa pun.</li>
 <li><b>Data kelompok:</b> nama kelompok, nama jamaah, kelompok, status kehadiran (Hadir, Izin, Sakit, Alfa) beserta tanggal, jam, dan nama pengurus yang mencatat, serta target pembelajaran, capaiannya, dan tanggal tercapai.</li>
-<li><b>Daftar pengurus:</b> email atau username yang ditambahkan Owner ke sebuah kelompok beserta perannya.</li>
+<li><b>Daftar pengurus:</b> email atau username yang ditambahkan Admin ke sebuah kelompok beserta perannya.</li>
 <li><b>Di perangkat Anda:</b> token masuk dan pilihan kelompok disimpan di penyimpanan browser agar Anda tidak perlu masuk berulang kali. Data ini terhapus saat Anda menekan Keluar.</li>
 </ul>
 
@@ -46,7 +46,7 @@ small{color:#6d7a73}
 <h2>Siapa yang dapat melihat</h2>
 <ul>
 <li>Data sebuah kelompok hanya dapat dibuka oleh pengurus atau pemilik akun yang terdaftar di kelompok itu.</li>
-<li><b>Owner:</b> akses penuh. <b>Ustadz/Ustadzah:</b> mengisi absensi dan capaian target. <b>Lihat Laporan:</b> hanya melihat daftar hadir dan target pencapaian, baik lewat email maupun lewat username yang dibuat Owner.</li>
+<li><b>Admin:</b> akses penuh. <b>Ustadz/Ustadzah:</b> mengisi absensi dan capaian target. <b>Lihat Laporan:</b> hanya melihat daftar hadir dan target pencapaian, baik lewat email maupun lewat username yang dibuat Admin.</li>
 <li>Akun dari kelompok lain tidak dapat melihat data Anda.</li>
 <li>Secara teknis, pengelola proyek Firebase aplikasi ini memiliki akses ke basis data melalui konsol Firebase.</li>
 </ul>
@@ -64,7 +64,7 @@ small{color:#6d7a73}
 <p>Daftar jamaah dapat memuat anak-anak. Pengurus yang memasukkan data bertanggung jawab memastikan ada izin dari orang tua atau wali, serta hanya memasukkan data yang diperlukan.</p>
 
 <h2>Menghapus data</h2>
-<p>Owner dapat menghapus jamaah, target, pengurus, dan akun Lihat Laporan dari dalam aplikasi. Untuk menghapus akun atau seluruh data kelompok, hubungi kontak di bawah.</p>
+<p>Admin dapat menghapus jamaah, target, pengurus, dan akun Lihat Laporan dari dalam aplikasi. Untuk menghapus akun atau seluruh data kelompok, hubungi kontak di bawah.</p>
 
 <h2>Perubahan kebijakan</h2>
 <p>Jika kebijakan ini berubah, tanggal pembaruan di atas akan diganti.</p>
